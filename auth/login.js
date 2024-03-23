@@ -69,18 +69,10 @@ export const supplierLogin = async (req, res) => {
     const { password, ...rest } = supplier ;
     supplier.deviceToken = deviceToken;
     await supplier.save();
-    if(rest.type === "blackHorse"){
-      res.status(200).json({
-        status: "success",
-        data: {...(await transformationSupplier(supplier)), access_token: jwt.sign({_id: rest._id, role: "blackHorse"}, process.env.JWT_SECRET, {})},
-      });
-    }
-    else{
       res.status(200).json({
         status: "success",
         data:  {...(await transformationSupplier(supplier)), access_token: jwt.sign({_id: rest._id, role: req.role}, process.env.JWT_SECRET, {})},
       });
-    }
   } catch (error) {
     res.status(500).json({
       status: "fail",

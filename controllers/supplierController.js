@@ -18,91 +18,26 @@ import Offer from "../models/offerSchema.js";
 
 export const getAllSupplier = async (req, res) => {
   try {
-    const userRole = req.role;
-    let query = { status: "active" };
-    const { type } = req.query;
-    const typeHeader = req.headers["type"];
-    let isAdmin = false;
-    if (typeHeader === "admin") {
-      isAdmin = true;
+    const type = req.query.type; 
+    let filter = {status:"active"}; 
+    if (type) {
+      filter.type = type;
     }
-    if (
-      type &&
-      ["gomla", "gomlaGomla", "blackHorse", "company", "nosGomla"].includes(
-        type
-      )
-    ) {
-      query.type = type;
-    } else if (!type) {
-      query.type = { $ne: "company" };
-    } else {
-      return res.status(400).json({
-        status: "fail",
-        message: "Invalid type filter.",
-      });
+    const isAdmin = req.headers["type"] === "admin";
+    if(isAdmin){
+      filter = {};
+      if (type) {
+        filter.type = type;
+      }
     }
-    let totalSuppliers;
-    let suppliers;
-    if (userRole == "customer" || userRole == "supplier") {
-      totalSuppliers = await Supplier.countDocuments();
-      suppliers = await Supplier.find(query);
-    } else if (userRole === "blackHorse") {
-      totalSuppliers = await Supplier.countDocuments(query);
-      suppliers = await Supplier.find(query);
-    } else {
-      return res.status(403).json({
-        status: "fail",
-        message: "Unauthorized access.",
-      });
-    }
-    if (suppliers.length > 0) {
-      suppliers = await Promise.all(
-        suppliers.map(async (supplier) =>
-          transformationSupplier(supplier, isAdmin)
-        )
-      );
-      paginateResponse(res, req.query, suppliers, totalSuppliers);
-      // await paginateResponse(res, req.query, await transformationSupplier(suppliers[0]), totalSuppliers);
-    } else {
-      res.status(200).json({
-        status: "fail",
-        data: [],
-        message: "Supplier Not Found",
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      status: "fail",
-      message: error.message,
+    const suppliers = await Supplier.find(filter); 
+    const supplierTransformation = await Promise.all(
+      suppliers.map(async (supplier) => transformationSupplier(supplier, isAdmin))
+    );
+    res.status(200).json({
+      status: "success",
+      data: supplierTransformation,
     });
-  }
-};
-export const getCompany = async (req, res) => {
-  const typeHeader = req.headers["type"];
-  let isAdmin = false;
-  try {
-    if (typeHeader === "admin") {
-      isAdmin = true;
-    }
-    const company = await Supplier.find();
-    const activeCompanies = company.filter(
-      (company) => company.status === "active" && company.type === "company"
-    );
-    const totalRecords = activeCompanies.length;
-    const companyTransformation = await Promise.all(
-      activeCompanies.map(async (company) =>
-        transformationSupplier(company, isAdmin)
-      )
-    );
-    if (companyTransformation.length > 0) {
-      paginateResponse(res, req.query, companyTransformation, totalRecords);
-    } else {
-      res.status(404).json({
-        status: "fail",
-        data: [],
-        message: "Could not find any active companies",
-      });
-    }
   } catch (error) {
     res.status(500).json({
       status: "fail",
@@ -115,31 +50,10 @@ export const getSupplier = async (req, res) => {
   try {
     const supplier = await Supplier.findById(id);
     if (supplier) {
-      if (supplier.type === "blackHorse") {
-        res.status(200).json({
-          status: "success",
-          data: {
-            ...(await transformationSupplier(supplier)),
-            access_token: jwt.sign(
-              { _id: supplier._id, role: "blackHorse" },
-              process.env.JWT_SECRET,
-              {}
-            ),
-          },
-        });
-      } else {
-        res.status(200).json({
-          status: "success",
-          data: {
-            ...(await transformationSupplier(supplier)),
-            access_token: jwt.sign(
-              { _id: supplier._id, role: req.role },
-              process.env.JWT_SECRET,
-              {}
-            ),
-          },
-        });
-      }
+      res.status(200).json({
+        status: "success",
+        data: await transformationSupplier(supplier),
+      });
     } else {
       res.status(404).json({
         status: "fail",

@@ -1,7 +1,6 @@
 import express from 'express';
 import {
     createProductSupplier, deleteProductSupplier,
-    getCompany,
     getOrdersForSupplierInCurrentMonth,
     getSupplier,
     lastOrdersBySupplierId,
@@ -32,7 +31,6 @@ Router.patch("/uploadPhoto/:id", uploadSupplier.single("image"), uploadPhoto);
 Router.post("/uploadPlaceImage/:id", uploadPlaceImage.array("placeImage"), uploadPlaceImages);
 Router.delete("/deletePlaceImage/:id", deletePlaceImages);
 
-Router.get('/company', getCompany);
 Router.get('/:id', getSupplier);
 Router.patch('/:id', updateSupplier);
 

@@ -63,7 +63,7 @@ const supplierSchema = mongoose.Schema({
   ],
   type: {
     type: String,
-    enum: ["gomla", "nosGomla", "gomlaGomla", "company", "blackHorse"],
+    enum: ["office", "distributor", "factory"],
   },
   image: {
     type: String,

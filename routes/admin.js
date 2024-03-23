@@ -90,7 +90,7 @@ const uploadCar = multer({ storage: storage('car') });
 
 const Router = express.Router();
 
-Router.get("/supplier", authenticate, getAllSupplier);
+Router.get("/supplier", getAllSupplier);
 Router.get("/supplier/:id", getSupplier);
 Router.delete("/supplier/:id", deleteSupplier);
 Router.post("/supplier", createSupplier);
