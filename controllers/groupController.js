@@ -67,11 +67,10 @@ export const getAllGroupForAdmin = async (req, res) => {
 };
 export const getAllGroupForCustomer = async (req, res) => {
   const customerId = req.body.customerId;
-  const region = req.body.region;
   try {
     const customer = await Customer.findById(customerId);
     if (customer) {
-      const group = await Group.find({ region: region, status: "pending" });
+      const group = await Group.find({status: "pending" });
       const transformationGroup = await Promise.all(
         group.map(async (group) => {
           return await transformationGroup(group);
@@ -327,10 +326,6 @@ export const getAllGroupPending = async (req, res) => {
     );
     if (group.length >0) {
       paginateResponse(res, req.query, transformationGroupData, group.length);
-      // return res.status(200).json({
-      //   status: "success",
-      //   data: transformationGroupData,
-      // });
     } else {
       return res.status(200).json({
         status: "fail",
@@ -351,9 +346,9 @@ export const canceledGroupByCustomerId = async (req, res) => {
   try {
     const group = await Group.findOne({ _id: groupId, status: "pending" });
     if (!group) {
-      return res.status(404).json({
+      return res.status(400).json({
         status: "fail",
-        message: "Group Not Found",
+        message: "Can Not Deleted from this group",
       });
     }
     const existingCustomer = group.customer.includes(customerId);
