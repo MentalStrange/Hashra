@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import GroupExpireDate from './groupExpireDate.js';
 
 const groupSchema = mongoose.Schema({
-  region:{
+  name:{
     type:String,
     required:[true, "Group should have a region"],
   },
