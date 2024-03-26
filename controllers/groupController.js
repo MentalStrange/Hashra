@@ -316,14 +316,10 @@ export const getGroupByDelivery = async (deliveryId) => { // use socket
 };
 // will be for customer to see the all group from the same region for the same supplier.
 export const getAllGroupPending = async (req, res) => {
-  const region = req.query.region;
-  const supplierId = req.query.supplierId;
-  console.log('region:', region, 'supplierId:', supplierId);
-  
+  const supplierId = req.query.supplierId;  
   try {
     const group = await Group.find({
       status: "pending",
-      region: region,
       supplierId: supplierId,
     });
     const transformationGroupData = await Promise.all(

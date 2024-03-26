@@ -354,8 +354,6 @@ export const transformationRegion = async (region)=>{
 export const transformationGroup = async (group)=>{
   const supplier = await Supplier.findById(group.supplierId);
   const region = await Region.findOne({name:group.name});
-  console.log('region:', region, 'group.name', group.name);
-  
   const order = await Order.find({group:group._id});
   const transformationOrderData = await Promise.all(
     order.map(async (order) => {
