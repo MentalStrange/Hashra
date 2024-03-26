@@ -140,6 +140,23 @@ export const updateGroup = async (req, res) => {
         })
       );
     }
+    if (groupStatus === "willBeDelivered") {
+      group.status = "willBeDelivered";
+      await Promise.all(
+        orders.map(async (order) => {
+          await updateOrderForGroup(order._id, "willBeDelivered");
+        })
+      );
+    }
+    if (groupStatus === "trash") {
+      group.status = "trash";
+      await Promise.all(
+        orders.map(async (order) => {
+          await updateOrderForGroup(order._id, "trash");
+        })
+      );
+    }
+    
     if (deliveryBoy) {
       group.deliveryBoy = deliveryBoy;
       await Promise.all(
