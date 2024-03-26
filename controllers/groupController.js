@@ -115,12 +115,12 @@ export const updateGroup = async (req, res) => {
         message: "No Group Found By This Id",
       });
     }
-    const orders = await Order.find({ group: groupId });
+    const orders = await Order.find({ group: groupId });    
     if (groupStatus === "completed") {
       group.status = "completed";
       await Promise.all(
         orders.map(async (order) => {
-          await updateOrderForGroup(order._id, "complete");
+          await updateOrderForGroup(order._id, "completed");
         })
       );
     }
