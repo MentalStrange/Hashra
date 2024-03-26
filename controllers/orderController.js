@@ -80,7 +80,7 @@ export const updateOrder = async (req, res, next) => {
         message: "Supplier not found",
       });
     }
-
+    // start pushing notification
     if (req.body.status === "complete") {
       const customer = await Customer.findById(order.customerId);
       await pushNotification(
@@ -219,7 +219,7 @@ export const updateOrder = async (req, res, next) => {
         }
       }
     }
-
+    // end pushing notification
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
       req.body,

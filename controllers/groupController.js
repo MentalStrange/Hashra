@@ -10,6 +10,13 @@ export const createGroup = async (req, res) => {
   const name = req.body.name;
   const supplierId = req.body.supplierId;
   try {
+    // const region = await Group.findOne({ name });
+    // if(!region){
+    //   return res.status(404).json({
+    //     status: "fail",
+    //     message: "Region Not Found",
+    //   });
+    // }
     const group = await Group.findOne({
       name,
       supplierId: supplierId,
@@ -23,7 +30,7 @@ export const createGroup = async (req, res) => {
     }
     const newGroup = new Group({
       ...req.body,
-    });
+    });    
     newGroup.save();
     res.status(201).json({
       status: "success",
