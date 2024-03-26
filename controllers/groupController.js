@@ -156,6 +156,14 @@ export const updateGroup = async (req, res) => {
         })
       );
     }
+    if(groupStatus === "delivery"){
+      group.status = "delivery";
+      await Promise.all(
+        orders.map(async (order) => {
+          await updateOrderForGroup(order._id, "delivery");
+        })
+      );
+    }
     
     if (deliveryBoy) {
       group.deliveryBoy = deliveryBoy;
